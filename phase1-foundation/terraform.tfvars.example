@@ -1,0 +1,4 @@
+yourname     = "yourname"
+region       = "us-east-1"
+allowed_cidr = "x.x.x.x/32"
+# db_password — pass via environment variable: $env:TF_VAR_db_password="yourpassword"
