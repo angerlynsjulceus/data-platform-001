@@ -1,4 +1,4 @@
-# Real-Time Sales Intelligence Platform — Terraform Build Guide
+# 🚀 Real-Time Sales Intelligence Platform — Terraform Build Guide
 
 **Author:** Angerlyns Julceus  
 **Stack:** AWS · Terraform · Windows (PowerShell)  
@@ -6,21 +6,66 @@
 
 ---
 
-## What You Are Building
+## 🏗️ What You Are Building
 
 A production-grade AWS data platform that:
-- Ingests live sales events via Kinesis Data Streams
-- Lands, transforms, and aggregates data through AWS Glue into S3 (bronze/silver/gold)
-- Makes data queryable via Athena and RDS MySQL
-- Generates AI-powered executive summaries via Amazon Bedrock
-- Is secured end-to-end with KMS, IAM Roles, and SSM Parameter Store
-- Is fully observable via CloudWatch
+- 📡 Ingests live sales events via Kinesis Data Streams
+- 🔄 Lands, transforms, and aggregates data through AWS Glue into S3 (bronze/silver/gold)
+- 🔍 Makes data queryable via Athena and RDS MySQL
+- 🤖 Generates AI-powered executive summaries via Amazon Bedrock
+- 🔒 Is secured end-to-end with KMS Customer Managed Keys, IAM Least-Privilege Roles, and SSM Parameter Store
+- 📊 Is fully observable via CloudWatch
 
 Every resource in this project is deployed and managed through Terraform. No portal clicking for infrastructure — the AWS Console is used only for validation.
 
 ---
 
-## Project Folder Structure
+## 🔐 Security Architecture
+
+This platform is built on an **Identity-Centric, Zero-Trust security model**. Every service authenticates via IAM — no credentials are ever stored on instances, in scripts, or in source control.
+
+**🗝️ Centralized Encryption Hub (KMS)**  
+A single Customer Managed Key (CMK) is created in Phase 1 and referenced by alias across all subsequent phases. This implements separation of duties — the encryption key lifecycle is managed independently from the services that use it. All data at rest across S3, RDS, Kinesis, and SSM is encrypted using this CMK.
+
+**👤 Least-Privilege IAM**  
+Every service gets its own IAM role scoped to only the actions it needs. For example, the EC2 simulator role can only `PutRecord` to Kinesis and `GetParameter` from SSM — nothing else. No wildcard actions, no shared credentials.
+
+**🔗 Encryption in Transit**  
+All AWS service communication uses TLS by default. No unencrypted endpoints are exposed.
+
+---
+
+## 📐 Phase Architecture — Modular Domain Blocks
+
+Each phase is an independent Terraform root module with its own state file. This is not just an organizational choice — it reflects how production data platforms are actually maintained. The Foundation layer (Phase 1) has a different change frequency and risk profile than the AI layer (Phase 5). Decoupling them means a change to the observability config cannot accidentally affect core infrastructure.
+
+| Phase | Domain | What Gets Built | Key AWS Resources |
+|---|---|---|---|
+| 1 — Foundation | 🏛️ Platform Core | S3 data lake, KMS, RDS, base IAM | `aws_s3_bucket`, `aws_kms_key`, `aws_db_instance` |
+| 2 — Ingestion | 📡 Data Capture | Kinesis stream, simulation EC2 | `aws_kinesis_stream`, `aws_instance`, `aws_iam_role` |
+| 3 — Orchestration | ⚙️ Data Processing | Glue jobs, crawlers, pipelines | `aws_glue_job`, `aws_glue_crawler` |
+| 4 — Querying | 🔍 Data Access | Athena workgroup, Glue catalog | `aws_athena_workgroup`, `aws_glue_catalog_database` |
+| 5 — AI | 🤖 Intelligence | Bedrock model, Lambda summariser | `aws_bedrock_model`, `aws_lambda_function` |
+| 6 — Observability | 📊 Operations | CloudWatch alarms, dashboards | `aws_cloudwatch_metric_alarm`, `aws_cloudwatch_dashboard` |
+
+---
+
+## 🧠 Architectural Decisions
+
+These decisions answer the questions a senior engineer or hiring manager would ask about the design.
+
+**⚡ Why Amazon Kinesis over Managed Kafka (MSK)?**  
+Kinesis Data Streams was chosen to prioritize serverless operational efficiency and native AWS integration. Unlike MSK, Kinesis requires zero cluster management and scales throughput elastically via shard adjustments without manual repartitioning. For a platform at this stage, the reduced operational overhead outweighs the additional flexibility MSK provides.
+
+**📦 Why independent state management per phase?**  
+Each phase is treated as an independent Terraform root module with its own state file. This minimizes the blast radius during deployments — a failed apply in Phase 5 cannot corrupt the state of Phase 1. It also simulates a real production environment where platform infrastructure and AI layers are owned and deployed by different teams on different schedules.
+
+**🔗 Why data source lookups instead of remote state?**  
+To reduce module coupling, AWS data sources (lookups by name or alias) are used rather than `terraform_remote_state`. This late-binding approach makes each module more portable and prevents state-locking dependencies between phases. A Phase 2 deployment does not need to read Phase 1's state file — it simply looks up the KMS alias by name.
+
+---
+
+## 📁 Project Folder Structure
 
 All commands in this guide use relative paths. Before running anything, `cd` into your project directory:
 
@@ -67,11 +112,9 @@ data-platform-001/
     └── simulate_sales.py
 ```
 
-Each phase is an independent Terraform root module with its own state file. Each phase can be deployed, updated, or destroyed independently without affecting other phases.
-
 ---
 
-## Windows Prerequisites
+## 🖥️ Windows Prerequisites
 
 Before starting Phase 1, complete all of the following. All commands run in PowerShell.
 
@@ -145,18 +188,24 @@ If not found, enable it via Settings → Apps → Optional Features → Add a fe
 
 ---
 
-## AWS-Specific Terraform Patterns Used Throughout
-
-Since you are comfortable with Terraform generally, here are the AWS-specific conventions this project follows consistently.
+## ⚙️ AWS-Specific Terraform Patterns Used Throughout
 
 **Provider Block**  
 Every phase starts with the AWS provider pinned to version 5.0 or higher and the region pulled from a variable — never hardcoded.
 
-**Data Source for Current Account**  
-Used throughout for building ARNs and making resource names unique:
 ```hcl
-data "aws_caller_identity" "current" {}
-# Access with: data.aws_caller_identity.current.account_id
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.region
+}
 ```
 
 **Referencing Resources Across Phases**  
@@ -167,20 +216,7 @@ Used in every phase that touches KMS, S3, Kinesis, or SSM. Every service that ne
 
 ---
 
-## Phase Summary
-
-| Phase | What Gets Built | Key AWS Resources |
-|---|---|---|
-| 1 — Foundation | S3 data lake, KMS, RDS, base IAM | `aws_s3_bucket`, `aws_kms_key`, `aws_db_instance` |
-| 2 — Ingestion | Kinesis stream, simulation EC2 | `aws_kinesis_stream`, `aws_instance`, `aws_iam_role` |
-| 3 — Orchestration | Glue jobs, crawlers, pipelines | `aws_glue_job`, `aws_glue_crawler` |
-| 4 — Querying | Athena workgroup, Glue catalog | `aws_athena_workgroup`, `aws_glue_catalog_database` |
-| 5 — AI | Bedrock model, Lambda summariser | `aws_bedrock_model`, `aws_lambda_function` |
-| 6 — Observability | CloudWatch alarms, dashboards | `aws_cloudwatch_metric_alarm`, `aws_cloudwatch_dashboard` |
-
----
-
-## Naming Conventions Used Throughout
+## 🏷️ Naming Conventions Used Throughout
 
 | Resource | Pattern | Example |
 |---|---|---|
@@ -197,13 +233,13 @@ All names should be lowercase with hyphens. S3 bucket names are globally unique 
 
 ---
 
-## Deploy Order
+## 🚢 Deploy Order
 
 Phases must be deployed in order — each phase depends on resources created by the previous one:
 
 ```powershell
-cd phase1-foundation  → terraform init → terraform apply
-cd phase2-ingestion   → terraform init → terraform apply
+cd phase1-foundation    → terraform init → terraform apply
+cd phase2-ingestion     → terraform init → terraform apply
 cd phase3-orchestration → terraform init → terraform apply
 # and so on...
 ```
@@ -217,7 +253,7 @@ cd phase5-ai            → terraform destroy
 
 ---
 
-## How to Work Through This Guide
+## 📋 How to Work Through This Guide
 
 - `cd` into your project directory first — every command runs relative to where you are
 - Work through each phase README in order
@@ -228,4 +264,13 @@ cd phase5-ai            → terraform destroy
 
 ---
 
-Start with **Phase 1 — Foundation**.
+## 🔭 Future Roadmap
+
+- 🔄 **CI/CD Integration** — Implementing GitHub Actions with `terraform plan` automation and OIDC-based AWS authentication to remove manual deployments from PowerShell
+- 🧊 **Modern Table Formats** — Migrating S3 storage patterns to Apache Iceberg or Delta Lake to support ACID transactions and schema evolution within the Glue and Athena layer
+- 🌐 **Multi-AZ Resilience** — Expanding the Phase 1 Foundation to a full Multi-Availability Zone VPC architecture to ensure high availability for the RDS instance and simulation nodes
+- ❄️ **Snowflake Integration** — Adding a Phase 7 using S3 as an external stage to demonstrate hybrid-cloud data movement between AWS and Snowflake
+
+---
+
+Start with **Phase 1 — Foundation**. 🏁
