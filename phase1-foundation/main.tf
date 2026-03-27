@@ -42,9 +42,10 @@ locals {
 # Silver bucket — cleaned and structured data
 # Gold bucket   — aggregated, analytics-ready data
 resource "aws_s3_bucket" "datalake" {
-  for_each = toset(local.buckets)
-  bucket   = "${each.key}-sales-${var.yourname}-${data.aws_caller_identity.current.account_id}"
-  tags     = var.tags
+  for_each      = toset(local.buckets)
+  bucket        = "${each.key}-sales-${var.yourname}-${data.aws_caller_identity.current.account_id}"
+  force_destroy = true
+  tags          = var.tags
 }
 
 resource "aws_s3_bucket_versioning" "datalake" {

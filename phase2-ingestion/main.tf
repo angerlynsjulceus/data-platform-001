@@ -12,6 +12,10 @@ terraform {
       source  = "hashicorp/local"
       version = ">= 2.0"
     }
+    null = {
+      source  = "hashicorp/null"
+      version = ">= 3.0"
+    }
   }
 }
 
@@ -204,6 +208,22 @@ resource "local_file" "capstone_pem" {
   content         = tls_private_key.capstone.private_key_pem
   filename        = "C:\\terraform\\key-pair\\capstone.pem"
   file_permission = "0400"
+}
+
+# Fix Windows SSH key permissions automatically — file_permission = "0400" is ignored on Windows.
+# icacls removes all inherited permissions, grants read-only to the current user,
+# which satisfies SSH's "UNPROTECTED PRIVATE KEY FILE" requirement.
+resource "null_resource" "fix_pem_permissions" {
+  triggers = {
+    pem_path = local_file.capstone_pem.filename
+  }
+
+  provisioner "local-exec" {
+    command     = "$path = 'C:\\terraform\\key-pair\\capstone.pem'; icacls $path /inheritance:r /grant ($env:USERNAME + ':R')"
+    interpreter = ["PowerShell", "-Command"]
+  }
+
+  depends_on = [local_file.capstone_pem]
 }
 
 # -----------------------------------------------
