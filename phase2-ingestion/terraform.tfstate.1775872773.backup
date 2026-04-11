@@ -1,0 +1,1062 @@
+{
+  "version": 4,
+  "terraform_version": "1.13.4",
+  "serial": 156,
+  "lineage": "5c464c3c-5c43-95e6-6fb1-e04ef35c3a11",
+  "outputs": {
+    "ec2_iam_role_arn": {
+      "value": "arn:aws:iam::767828742181:role/role-simulator-a3julceus6",
+      "type": "string"
+    },
+    "ec2_public_ip": {
+      "value": "44.211.151.9",
+      "type": "string"
+    },
+    "key_pair_name": {
+      "value": "capstone",
+      "type": "string"
+    },
+    "kinesis_stream_arn": {
+      "value": "arn:aws:kinesis:us-east-1:767828742181:stream/sales-events-a3julceus6",
+      "type": "string"
+    },
+    "kinesis_stream_name": {
+      "value": "sales-events-a3julceus6",
+      "type": "string"
+    },
+    "ssh_command": {
+      "value": "ssh -i C:\\terraform\\key-pair\\capstone.pem ec2-user@44.211.151.9",
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "mode": "data",
+      "type": "aws_ami",
+      "name": "amazon_linux",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "allow_unsafe_filter": null,
+            "architecture": "x86_64",
+            "arn": "arn:aws:ec2:us-east-1::image/ami-09757e8c9b2ba5eef",
+            "block_device_mappings": [
+              {
+                "device_name": "/dev/xvda",
+                "ebs": {
+                  "delete_on_termination": "true",
+                  "encrypted": "false",
+                  "iops": "3000",
+                  "snapshot_id": "snap-0c04f72ce8a51edbf",
+                  "throughput": "125",
+                  "volume_initialization_rate": "0",
+                  "volume_size": "30",
+                  "volume_type": "gp3"
+                },
+                "no_device": "",
+                "virtual_name": ""
+              }
+            ],
+            "boot_mode": "uefi-preferred",
+            "creation_date": "2026-04-08T21:44:02.000Z",
+            "deprecation_time": "2028-04-08T21:44:02.000Z",
+            "description": "Amazon Linux AMI 2023.0.20260408 x86_64 ECS HVM EBS",
+            "ena_support": true,
+            "executable_users": null,
+            "filter": [
+              {
+                "name": "name",
+                "values": [
+                  "al2023-ami-*-x86_64"
+                ]
+              }
+            ],
+            "hypervisor": "xen",
+            "id": "ami-09757e8c9b2ba5eef",
+            "image_id": "ami-09757e8c9b2ba5eef",
+            "image_location": "amazon/al2023-ami-ecs-neuron-hvm-2023.0.20260408-kernel-6.1-x86_64",
+            "image_owner_alias": "amazon",
+            "image_type": "machine",
+            "imds_support": "v2.0",
+            "include_deprecated": false,
+            "kernel_id": "",
+            "last_launched_time": "",
+            "most_recent": true,
+            "name": "al2023-ami-ecs-neuron-hvm-2023.0.20260408-kernel-6.1-x86_64",
+            "name_regex": null,
+            "owner_id": "591542846629",
+            "owners": [
+              "amazon"
+            ],
+            "platform": "",
+            "platform_details": "Linux/UNIX",
+            "product_codes": [],
+            "public": true,
+            "ramdisk_id": "",
+            "region": "us-east-1",
+            "root_device_name": "/dev/xvda",
+            "root_device_type": "ebs",
+            "root_snapshot_id": "snap-0c04f72ce8a51edbf",
+            "sriov_net_support": "simple",
+            "state": "available",
+            "state_reason": {
+              "code": "UNSET",
+              "message": "UNSET"
+            },
+            "tags": {},
+            "timeouts": null,
+            "tpm_support": "",
+            "uefi_data": null,
+            "usage_operation": "RunInstances",
+            "virtualization_type": "hvm"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "mode": "data",
+      "type": "aws_caller_identity",
+      "name": "current",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "account_id": "767828742181",
+            "arn": "arn:aws:iam::767828742181:user/Worker1",
+            "id": "767828742181",
+            "user_id": "AIDA3FRRI2AS7R4THDVHX"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "mode": "data",
+      "type": "aws_iam_policy_document",
+      "name": "simulator",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "3480072637",
+            "json": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Sid\": \"SSMAccess\",\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"ssm:GetParameters\",\n        \"ssm:GetParameter\"\n      ],\n      \"Resource\": \"arn:aws:ssm:us-east-1:767828742181:parameter/sales/a3julceus6/*\"\n    },\n    {\n      \"Sid\": \"KinesisSendAccess\",\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"kinesis:PutRecords\",\n        \"kinesis:PutRecord\"\n      ],\n      \"Resource\": \"arn:aws:kinesis:us-east-1:767828742181:stream/sales-events-a3julceus6\"\n    },\n    {\n      \"Sid\": \"KMSDecrypt\",\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"kms:GenerateDataKey\",\n        \"kms:Decrypt\"\n      ],\n      \"Resource\": \"arn:aws:kms:us-east-1:767828742181:key/3274c7c1-46bf-4e23-9965-6e8afcbd2d71\"\n    }\n  ]\n}",
+            "minified_json": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"SSMAccess\",\"Effect\":\"Allow\",\"Action\":[\"ssm:GetParameters\",\"ssm:GetParameter\"],\"Resource\":\"arn:aws:ssm:us-east-1:767828742181:parameter/sales/a3julceus6/*\"},{\"Sid\":\"KinesisSendAccess\",\"Effect\":\"Allow\",\"Action\":[\"kinesis:PutRecords\",\"kinesis:PutRecord\"],\"Resource\":\"arn:aws:kinesis:us-east-1:767828742181:stream/sales-events-a3julceus6\"},{\"Sid\":\"KMSDecrypt\",\"Effect\":\"Allow\",\"Action\":[\"kms:GenerateDataKey\",\"kms:Decrypt\"],\"Resource\":\"arn:aws:kms:us-east-1:767828742181:key/3274c7c1-46bf-4e23-9965-6e8afcbd2d71\"}]}",
+            "override_json": null,
+            "override_policy_documents": null,
+            "policy_id": null,
+            "source_json": null,
+            "source_policy_documents": null,
+            "statement": [
+              {
+                "actions": [
+                  "ssm:GetParameter",
+                  "ssm:GetParameters"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [],
+                "resources": [
+                  "arn:aws:ssm:us-east-1:767828742181:parameter/sales/a3julceus6/*"
+                ],
+                "sid": "SSMAccess"
+              },
+              {
+                "actions": [
+                  "kinesis:PutRecord",
+                  "kinesis:PutRecords"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [],
+                "resources": [
+                  "arn:aws:kinesis:us-east-1:767828742181:stream/sales-events-a3julceus6"
+                ],
+                "sid": "KinesisSendAccess"
+              },
+              {
+                "actions": [
+                  "kms:Decrypt",
+                  "kms:GenerateDataKey"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [],
+                "resources": [
+                  "arn:aws:kms:us-east-1:767828742181:key/3274c7c1-46bf-4e23-9965-6e8afcbd2d71"
+                ],
+                "sid": "KMSDecrypt"
+              }
+            ],
+            "version": "2012-10-17"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "mode": "data",
+      "type": "aws_kms_alias",
+      "name": "main",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:kms:us-east-1:767828742181:alias/kms-sales-a3julceus6",
+            "id": "arn:aws:kms:us-east-1:767828742181:alias/kms-sales-a3julceus6",
+            "name": "alias/kms-sales-a3julceus6",
+            "region": "us-east-1",
+            "target_key_arn": "arn:aws:kms:us-east-1:767828742181:key/3274c7c1-46bf-4e23-9965-6e8afcbd2d71",
+            "target_key_id": "3274c7c1-46bf-4e23-9965-6e8afcbd2d71"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "mode": "data",
+      "type": "aws_kms_key",
+      "name": "main",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:kms:us-east-1:767828742181:key/3274c7c1-46bf-4e23-9965-6e8afcbd2d71",
+            "aws_account_id": "767828742181",
+            "cloud_hsm_cluster_id": "",
+            "creation_date": "2026-04-11T01:41:53Z",
+            "custom_key_store_id": "",
+            "customer_master_key_spec": "SYMMETRIC_DEFAULT",
+            "deletion_date": null,
+            "description": "kms-sales-a3julceus6",
+            "enabled": true,
+            "expiration_model": "",
+            "grant_tokens": null,
+            "id": "3274c7c1-46bf-4e23-9965-6e8afcbd2d71",
+            "key_id": "arn:aws:kms:us-east-1:767828742181:key/3274c7c1-46bf-4e23-9965-6e8afcbd2d71",
+            "key_manager": "CUSTOMER",
+            "key_spec": "SYMMETRIC_DEFAULT",
+            "key_state": "Enabled",
+            "key_usage": "ENCRYPT_DECRYPT",
+            "multi_region": false,
+            "multi_region_configuration": [],
+            "origin": "AWS_KMS",
+            "pending_deletion_window_in_days": 0,
+            "region": "us-east-1",
+            "valid_to": null,
+            "xks_key_configuration": []
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_iam_instance_profile",
+      "name": "simulator",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:iam::767828742181:instance-profile/profile-simulator-a3julceus6",
+            "create_date": "2026-04-11T01:48:57Z",
+            "id": "profile-simulator-a3julceus6",
+            "name": "profile-simulator-a3julceus6",
+            "name_prefix": "",
+            "path": "/",
+            "role": "role-simulator-a3julceus6",
+            "tags": {},
+            "tags_all": {},
+            "unique_id": "AIPA3FRRI2AS7UL7NXW7P"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_iam_role.simulator"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_iam_role",
+      "name": "simulator",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:iam::767828742181:role/role-simulator-a3julceus6",
+            "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"}}],\"Version\":\"2012-10-17\"}",
+            "create_date": "2026-04-11T01:48:56Z",
+            "description": "",
+            "force_detach_policies": false,
+            "id": "role-simulator-a3julceus6",
+            "inline_policy": [
+              {
+                "name": "policy-simulator-a3julceus6",
+                "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ssm:GetParameters\",\"ssm:GetParameter\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:ssm:us-east-1:767828742181:parameter/sales/a3julceus6/*\",\"Sid\":\"SSMAccess\"},{\"Action\":[\"kinesis:PutRecords\",\"kinesis:PutRecord\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:kinesis:us-east-1:767828742181:stream/sales-events-a3julceus6\",\"Sid\":\"KinesisSendAccess\"},{\"Action\":[\"kms:GenerateDataKey\",\"kms:Decrypt\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:kms:us-east-1:767828742181:key/3274c7c1-46bf-4e23-9965-6e8afcbd2d71\",\"Sid\":\"KMSDecrypt\"}]}"
+              }
+            ],
+            "managed_policy_arns": [],
+            "max_session_duration": 3600,
+            "name": "role-simulator-a3julceus6",
+            "name_prefix": "",
+            "path": "/",
+            "permissions_boundary": "",
+            "tags": {
+              "environment": "dev",
+              "managed_by": "terraform",
+              "project": "sales-intelligence"
+            },
+            "tags_all": {
+              "environment": "dev",
+              "managed_by": "terraform",
+              "project": "sales-intelligence"
+            },
+            "unique_id": "AROA3FRRI2AS3QZX5S7GA"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "767828742181",
+            "name": "role-simulator-a3julceus6"
+          },
+          "private": "bnVsbA=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_iam_role_policy",
+      "name": "simulator",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "role-simulator-a3julceus6:policy-simulator-a3julceus6",
+            "name": "policy-simulator-a3julceus6",
+            "name_prefix": "",
+            "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ssm:GetParameters\",\"ssm:GetParameter\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:ssm:us-east-1:767828742181:parameter/sales/a3julceus6/*\",\"Sid\":\"SSMAccess\"},{\"Action\":[\"kinesis:PutRecords\",\"kinesis:PutRecord\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:kinesis:us-east-1:767828742181:stream/sales-events-a3julceus6\",\"Sid\":\"KinesisSendAccess\"},{\"Action\":[\"kms:GenerateDataKey\",\"kms:Decrypt\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:kms:us-east-1:767828742181:key/3274c7c1-46bf-4e23-9965-6e8afcbd2d71\",\"Sid\":\"KMSDecrypt\"}]}",
+            "role": "role-simulator-a3julceus6"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "767828742181",
+            "name": "policy-simulator-a3julceus6",
+            "role": "role-simulator-a3julceus6"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_iam_role.simulator",
+            "aws_kinesis_stream.sales",
+            "data.aws_caller_identity.current",
+            "data.aws_iam_policy_document.simulator",
+            "data.aws_kms_alias.main",
+            "data.aws_kms_key.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "simulator",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 2,
+          "attributes": {
+            "ami": "ami-09757e8c9b2ba5eef",
+            "arn": "arn:aws:ec2:us-east-1:767828742181:instance/i-085b529e002937e23",
+            "associate_public_ip_address": true,
+            "availability_zone": "us-east-1a",
+            "capacity_reservation_specification": [
+              {
+                "capacity_reservation_preference": "open",
+                "capacity_reservation_target": []
+              }
+            ],
+            "cpu_options": [
+              {
+                "amd_sev_snp": "",
+                "core_count": 1,
+                "nested_virtualization": "",
+                "threads_per_core": 2
+              }
+            ],
+            "credit_specification": [
+              {
+                "cpu_credits": "unlimited"
+              }
+            ],
+            "disable_api_stop": false,
+            "disable_api_termination": false,
+            "ebs_block_device": [],
+            "ebs_optimized": false,
+            "enable_primary_ipv6": null,
+            "enclave_options": [
+              {
+                "enabled": false
+              }
+            ],
+            "ephemeral_block_device": [],
+            "force_destroy": false,
+            "get_password_data": false,
+            "hibernation": false,
+            "host_id": "",
+            "host_resource_group_arn": null,
+            "iam_instance_profile": "profile-simulator-a3julceus6",
+            "id": "i-085b529e002937e23",
+            "instance_initiated_shutdown_behavior": "stop",
+            "instance_lifecycle": "",
+            "instance_market_options": [],
+            "instance_state": "running",
+            "instance_type": "t3.micro",
+            "ipv6_address_count": 0,
+            "ipv6_addresses": [],
+            "key_name": "capstone",
+            "launch_template": [],
+            "maintenance_options": [
+              {
+                "auto_recovery": "default"
+              }
+            ],
+            "metadata_options": [
+              {
+                "http_endpoint": "enabled",
+                "http_protocol_ipv6": "disabled",
+                "http_put_response_hop_limit": 2,
+                "http_tokens": "required",
+                "instance_metadata_tags": "disabled"
+              }
+            ],
+            "monitoring": true,
+            "network_interface": [],
+            "outpost_arn": "",
+            "password_data": "",
+            "placement_group": "",
+            "placement_group_id": "",
+            "placement_partition_number": 0,
+            "primary_network_interface": [
+              {
+                "delete_on_termination": true,
+                "network_interface_id": "eni-0479c22c2bb3e24e5"
+              }
+            ],
+            "primary_network_interface_id": "eni-0479c22c2bb3e24e5",
+            "private_dns": "ip-10-1-1-39.ec2.internal",
+            "private_dns_name_options": [
+              {
+                "enable_resource_name_dns_a_record": false,
+                "enable_resource_name_dns_aaaa_record": false,
+                "hostname_type": "ip-name"
+              }
+            ],
+            "private_ip": "10.1.1.39",
+            "public_dns": "ec2-44-211-151-9.compute-1.amazonaws.com",
+            "public_ip": "44.211.151.9",
+            "region": "us-east-1",
+            "root_block_device": [
+              {
+                "delete_on_termination": true,
+                "device_name": "/dev/xvda",
+                "encrypted": true,
+                "iops": 3000,
+                "kms_key_id": "arn:aws:kms:us-east-1:767828742181:key/3274c7c1-46bf-4e23-9965-6e8afcbd2d71",
+                "tags": null,
+                "tags_all": {},
+                "throughput": 125,
+                "volume_id": "vol-0b95dbd6908e06f0b",
+                "volume_size": 30,
+                "volume_type": "gp3"
+              }
+            ],
+            "secondary_network_interface": [],
+            "secondary_private_ips": [],
+            "security_groups": [],
+            "source_dest_check": true,
+            "spot_instance_request_id": "",
+            "subnet_id": "subnet-038ce4e4380b62d26",
+            "tags": {
+              "Name": "ec2-simulator-a3julceus6",
+              "environment": "dev",
+              "managed_by": "terraform",
+              "project": "sales-intelligence"
+            },
+            "tags_all": {
+              "Name": "ec2-simulator-a3julceus6",
+              "environment": "dev",
+              "managed_by": "terraform",
+              "project": "sales-intelligence"
+            },
+            "tenancy": "default",
+            "timeouts": null,
+            "user_data": "#!/bin/bash\nyum update -y\nyum install python3-pip -y\npip3 install boto3\n\n# Pull stream name from SSM Parameter Store\nSTREAM_NAME=$(aws ssm get-parameter \\\n  --name \"/sales/a3julceus6/kinesis-stream-name\" \\\n  --with-decryption \\\n  --query \"Parameter.Value\" \\\n  --output text \\\n  --region us-east-1)\n\n# Write the simulation script\ncat \u003c\u003c'SCRIPT' \u003e /home/ec2-user/simulate_sales.py\nimport json\nimport random\nimport time\nimport boto3\nfrom datetime import datetime\n\nSTREAM_NAME = \"STREAM_NAME_PLACEHOLDER\"\nREGION      = \"REGION_PLACEHOLDER\"\n\nPRODUCTS = [\"Laptop\", \"Monitor\", \"Keyboard\", \"Mouse\", \"Headset\", \"Webcam\", \"Docking Station\"]\nREGIONS  = [\"East\", \"West\", \"North\", \"South\", \"Central\"]\n\ndef generate_sale():\n    return {\n        \"transaction_id\": f\"TXN-{random.randint(100000, 999999)}\",\n        \"timestamp\":      datetime.utcnow().isoformat(),\n        \"product\":        random.choice(PRODUCTS),\n        \"quantity\":       random.randint(1, 5),\n        \"unit_price\":     round(random.uniform(20, 1500), 2),\n        \"region\":         random.choice(REGIONS),\n        \"store_id\":       f\"STORE-{random.randint(1, 20):03d}\"\n    }\n\nclient = boto3.client(\"kinesis\", region_name=REGION)\n\nprint(\"Starting simulation - sending events every 2 seconds. Ctrl+C to stop.\")\n\ntry:\n    while True:\n        sale = generate_sale()\n        client.put_record(\n            StreamName=STREAM_NAME,\n            Data=json.dumps(sale),\n            PartitionKey=sale[\"store_id\"]\n        )\n        print(f\"Sent: {sale['transaction_id']} | {sale['product']} | {sale['unit_price']} | {sale['region']}\")\n        time.sleep(2)\nexcept KeyboardInterrupt:\n    print(\"Simulation stopped.\")\nSCRIPT\n\n# Replace placeholders with actual values\nsed -i \"s/STREAM_NAME_PLACEHOLDER/$STREAM_NAME/g\" /home/ec2-user/simulate_sales.py\nsed -i \"s/REGION_PLACEHOLDER/us-east-1/g\" /home/ec2-user/simulate_sales.py\n\nchown ec2-user:ec2-user /home/ec2-user/simulate_sales.py\n",
+            "user_data_base64": null,
+            "user_data_replace_on_change": false,
+            "volume_tags": null,
+            "vpc_security_group_ids": [
+              "sg-01980fdf760831091"
+            ]
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "767828742181",
+            "id": "i-085b529e002937e23",
+            "region": "us-east-1"
+          },
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMCwicmVhZCI6OTAwMDAwMDAwMDAwLCJ1cGRhdGUiOjYwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMiJ9",
+          "dependencies": [
+            "aws_iam_instance_profile.simulator",
+            "aws_iam_role.simulator",
+            "aws_key_pair.capstone",
+            "aws_security_group.simulator",
+            "aws_subnet.main",
+            "aws_vpc.main",
+            "data.aws_ami.amazon_linux",
+            "data.aws_kms_alias.main",
+            "tls_private_key.capstone"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_internet_gateway",
+      "name": "main",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:ec2:us-east-1:767828742181:internet-gateway/igw-0ae2f3ecafc521707",
+            "id": "igw-0ae2f3ecafc521707",
+            "owner_id": "767828742181",
+            "region": "us-east-1",
+            "tags": {
+              "Name": "igw-sales-a3julceus6",
+              "environment": "dev",
+              "managed_by": "terraform",
+              "project": "sales-intelligence"
+            },
+            "tags_all": {
+              "Name": "igw-sales-a3julceus6",
+              "environment": "dev",
+              "managed_by": "terraform",
+              "project": "sales-intelligence"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-04c0143060634bbd8"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "aws_vpc.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_key_pair",
+      "name": "capstone",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:us-east-1:767828742181:key-pair/capstone",
+            "fingerprint": "0f:a4:a8:ba:28:c8:c1:17:19:3e:1f:04:5c:3d:01:4a",
+            "id": "capstone",
+            "key_name": "capstone",
+            "key_name_prefix": "",
+            "key_pair_id": "key-0cde5afcd280b0f4c",
+            "key_type": "rsa",
+            "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDxRaTI2k11DX/wXQ+ta5abDf5LH35HnccP9uGpzUku5EVRXhYAItFhsihxCSkCfNau6rJJ8/XUUdkY55apO41B6DrXEmzDhQCSyNgoH8LPVOOZo7jDLPndM+A0VcWxae9vqlO2Oof8+KdeZGmYf3kK+V+5Tj7BhhpKOvp8zmGH7O9GOYhDvFmg9TRXkWatxzPF1oN7fHirfvvVo2Jm1U7rHL6jTtnxEAEAu2N0iLPHfqb0Wyg7LV+1t1IwfB0n8nLJX/ZRFvvvhkmf6vogPChNQPT9pu3NnGGEladca7ei3yncGIE7ZPOIGzIhLViCm5Nltx9YsDKX8q0ADuDz4pt3bpJAt/py/3s2lWsr3wAUdR2lOj1SwWeFPVWF0n4k5Pb6qTksFctvJ2WmQNue3Nea7ry277RTjgq11EEmMxCds/XeCvtZam21cjUeyO7TQO8ZnzgirjXuFjofftSe10KD9C0LapOnpwY10beCVO00FRMOZdxZZMI0CX7ZTXryiHf33L/8uMkrrjTHNW7OEW9IST793NXVFT4cZffwEuNkf2Se5PRIytNbeivwbal445bipzhWWfxL5Td3Tq5+xIPji+uCDRkD2dlIWP8YczU4XdoJcTZO/mMyTDRNFWBR3YQ0MeGgiHsU01dY/NFrL06NECOwWc8Uweghh6hspAh1pw==",
+            "region": "us-east-1",
+            "tags": {
+              "environment": "dev",
+              "managed_by": "terraform",
+              "project": "sales-intelligence"
+            },
+            "tags_all": {
+              "environment": "dev",
+              "managed_by": "terraform",
+              "project": "sales-intelligence"
+            }
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjEifQ==",
+          "dependencies": [
+            "tls_private_key.capstone"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_kinesis_stream",
+      "name": "sales",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:kinesis:us-east-1:767828742181:stream/sales-events-a3julceus6",
+            "encryption_type": "KMS",
+            "enforce_consumer_deletion": false,
+            "id": "arn:aws:kinesis:us-east-1:767828742181:stream/sales-events-a3julceus6",
+            "kms_key_id": "arn:aws:kms:us-east-1:767828742181:alias/kms-sales-a3julceus6",
+            "max_record_size_in_kib": 1024,
+            "name": "sales-events-a3julceus6",
+            "region": "us-east-1",
+            "retention_period": 24,
+            "shard_count": 1,
+            "shard_level_metrics": [],
+            "stream_mode_details": [
+              {
+                "stream_mode": "PROVISIONED"
+              }
+            ],
+            "tags": {
+              "environment": "dev",
+              "managed_by": "terraform",
+              "project": "sales-intelligence"
+            },
+            "tags_all": {
+              "environment": "dev",
+              "managed_by": "terraform",
+              "project": "sales-intelligence"
+            },
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6NzIwMDAwMDAwMDAwMCwidXBkYXRlIjo3MjAwMDAwMDAwMDAwfSwic2NoZW1hX3ZlcnNpb24iOiIxIn0=",
+          "dependencies": [
+            "data.aws_kms_alias.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_route_table",
+      "name": "main",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:ec2:us-east-1:767828742181:route-table/rtb-0fd34a98fe4d7042e",
+            "id": "rtb-0fd34a98fe4d7042e",
+            "owner_id": "767828742181",
+            "propagating_vgws": [],
+            "region": "us-east-1",
+            "route": [
+              {
+                "carrier_gateway_id": "",
+                "cidr_block": "0.0.0.0/0",
+                "core_network_arn": "",
+                "destination_prefix_list_id": "",
+                "egress_only_gateway_id": "",
+                "gateway_id": "igw-0ae2f3ecafc521707",
+                "ipv6_cidr_block": "",
+                "local_gateway_id": "",
+                "nat_gateway_id": "",
+                "network_interface_id": "",
+                "transit_gateway_id": "",
+                "vpc_endpoint_id": "",
+                "vpc_peering_connection_id": ""
+              }
+            ],
+            "tags": {
+              "Name": "rt-sales-a3julceus6",
+              "environment": "dev",
+              "managed_by": "terraform",
+              "project": "sales-intelligence"
+            },
+            "tags_all": {
+              "Name": "rt-sales-a3julceus6",
+              "environment": "dev",
+              "managed_by": "terraform",
+              "project": "sales-intelligence"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-04c0143060634bbd8"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "767828742181",
+            "id": "rtb-0fd34a98fe4d7042e",
+            "region": "us-east-1"
+          },
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "aws_internet_gateway.main",
+            "aws_vpc.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_route_table_association",
+      "name": "main",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "gateway_id": "",
+            "id": "rtbassoc-09c904578ab6581b3",
+            "region": "us-east-1",
+            "route_table_id": "rtb-0fd34a98fe4d7042e",
+            "subnet_id": "subnet-038ce4e4380b62d26",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "aws_internet_gateway.main",
+            "aws_route_table.main",
+            "aws_subnet.main",
+            "aws_vpc.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_security_group",
+      "name": "simulator",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:us-east-1:767828742181:security-group/sg-01980fdf760831091",
+            "description": "Allow SSH access to simulator EC2",
+            "egress": [
+              {
+                "cidr_blocks": [
+                  "0.0.0.0/0"
+                ],
+                "description": "",
+                "from_port": 0,
+                "ipv6_cidr_blocks": [],
+                "prefix_list_ids": [],
+                "protocol": "-1",
+                "security_groups": [],
+                "self": false,
+                "to_port": 0
+              }
+            ],
+            "id": "sg-01980fdf760831091",
+            "ingress": [
+              {
+                "cidr_blocks": [
+                  "0.0.0.0/0"
+                ],
+                "description": "",
+                "from_port": 22,
+                "ipv6_cidr_blocks": [],
+                "prefix_list_ids": [],
+                "protocol": "tcp",
+                "security_groups": [],
+                "self": false,
+                "to_port": 22
+              }
+            ],
+            "name": "simulator-sg-a3julceus6",
+            "name_prefix": "",
+            "owner_id": "767828742181",
+            "region": "us-east-1",
+            "revoke_rules_on_delete": false,
+            "tags": {
+              "environment": "dev",
+              "managed_by": "terraform",
+              "project": "sales-intelligence"
+            },
+            "tags_all": {
+              "environment": "dev",
+              "managed_by": "terraform",
+              "project": "sales-intelligence"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-04c0143060634bbd8"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "767828742181",
+            "id": "sg-01980fdf760831091",
+            "region": "us-east-1"
+          },
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6OTAwMDAwMDAwMDAwfSwic2NoZW1hX3ZlcnNpb24iOiIxIn0=",
+          "dependencies": [
+            "aws_vpc.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_ssm_parameter",
+      "name": "kinesis_stream_name",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "allowed_pattern": "",
+            "arn": "arn:aws:ssm:us-east-1:767828742181:parameter/sales/a3julceus6/kinesis-stream-name",
+            "data_type": "text",
+            "description": "",
+            "has_value_wo": false,
+            "id": "/sales/a3julceus6/kinesis-stream-name",
+            "insecure_value": null,
+            "key_id": "arn:aws:kms:us-east-1:767828742181:alias/kms-sales-a3julceus6",
+            "name": "/sales/a3julceus6/kinesis-stream-name",
+            "overwrite": null,
+            "region": "us-east-1",
+            "tags": {
+              "environment": "dev",
+              "managed_by": "terraform",
+              "project": "sales-intelligence"
+            },
+            "tags_all": {
+              "environment": "dev",
+              "managed_by": "terraform",
+              "project": "sales-intelligence"
+            },
+            "tier": "Standard",
+            "type": "SecureString",
+            "value": "sales-events-a3julceus6",
+            "value_wo": null,
+            "value_wo_version": null,
+            "version": 1
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "value"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "value_wo"
+              }
+            ]
+          ],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "767828742181",
+            "name": "/sales/a3julceus6/kinesis-stream-name",
+            "region": "us-east-1"
+          },
+          "private": "bnVsbA==",
+          "dependencies": [
+            "aws_kinesis_stream.sales",
+            "data.aws_kms_alias.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "main",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:us-east-1:767828742181:subnet/subnet-038ce4e4380b62d26",
+            "assign_ipv6_address_on_creation": false,
+            "availability_zone": "us-east-1a",
+            "availability_zone_id": "use1-az2",
+            "cidr_block": "10.1.1.0/24",
+            "customer_owned_ipv4_pool": "",
+            "enable_dns64": false,
+            "enable_lni_at_device_index": 0,
+            "enable_resource_name_dns_a_record_on_launch": false,
+            "enable_resource_name_dns_aaaa_record_on_launch": false,
+            "id": "subnet-038ce4e4380b62d26",
+            "ipv4_ipam_pool_id": null,
+            "ipv4_netmask_length": null,
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_association_id": "",
+            "ipv6_ipam_pool_id": null,
+            "ipv6_native": false,
+            "ipv6_netmask_length": null,
+            "map_customer_owned_ip_on_launch": false,
+            "map_public_ip_on_launch": true,
+            "outpost_arn": "",
+            "owner_id": "767828742181",
+            "private_dns_hostname_type_on_launch": "ip-name",
+            "region": "us-east-1",
+            "tags": {
+              "Name": "subnet-simulator-a3julceus6",
+              "environment": "dev",
+              "managed_by": "terraform",
+              "project": "sales-intelligence"
+            },
+            "tags_all": {
+              "Name": "subnet-simulator-a3julceus6",
+              "environment": "dev",
+              "managed_by": "terraform",
+              "project": "sales-intelligence"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-04c0143060634bbd8"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "767828742181",
+            "id": "subnet-038ce4e4380b62d26",
+            "region": "us-east-1"
+          },
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "aws_vpc.main"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_vpc",
+      "name": "main",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:us-east-1:767828742181:vpc/vpc-04c0143060634bbd8",
+            "assign_generated_ipv6_cidr_block": false,
+            "cidr_block": "10.1.0.0/16",
+            "default_network_acl_id": "acl-0c646f07b91eb64b2",
+            "default_route_table_id": "rtb-02bd8a1b086a7995c",
+            "default_security_group_id": "sg-0281ac860abbe044a",
+            "dhcp_options_id": "dopt-05aebf49c5277720c",
+            "enable_dns_hostnames": true,
+            "enable_dns_support": true,
+            "enable_network_address_usage_metrics": false,
+            "id": "vpc-04c0143060634bbd8",
+            "instance_tenancy": "default",
+            "ipv4_ipam_pool_id": null,
+            "ipv4_netmask_length": null,
+            "ipv6_association_id": "",
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_network_border_group": "",
+            "ipv6_ipam_pool_id": "",
+            "ipv6_netmask_length": 0,
+            "main_route_table_id": "rtb-02bd8a1b086a7995c",
+            "owner_id": "767828742181",
+            "region": "us-east-1",
+            "tags": {
+              "Name": "vpc-sales-a3julceus6",
+              "environment": "dev",
+              "managed_by": "terraform",
+              "project": "sales-intelligence"
+            },
+            "tags_all": {
+              "Name": "vpc-sales-a3julceus6",
+              "environment": "dev",
+              "managed_by": "terraform",
+              "project": "sales-intelligence"
+            }
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "identity": {
+            "account_id": "767828742181",
+            "id": "vpc-04c0143060634bbd8",
+            "region": "us-east-1"
+          },
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjEifQ=="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "tls_private_key",
+      "name": "capstone",
+      "provider": "provider[\"registry.terraform.io/hashicorp/tls\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "algorithm": "RSA",
+            "ecdsa_curve": "P224",
+            "id": "55ce4d28061253a0b4614e0d263c2cb596443ed6",
+            "private_key_openssh": "-----BEGIN OPENSSH PRIVATE KEY-----\n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\n-----END OPENSSH PRIVATE KEY-----\n",
+            "private_key_pem": "-----BEGIN RSA PRIVATE KEY-----\n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\n-----END RSA PRIVATE KEY-----\n",
+            "private_key_pem_pkcs8": "-----BEGIN PRIVATE KEY-----\nMIIJQwIBADANBgkqhkiG9w0BAQEFAASCCS0wggkpAgEAAoICAQDxRaTI2k11DX/w\nXQ+ta5abDf5LH35HnccP9uGpzUku5EVRXhYAItFhsihxCSkCfNau6rJJ8/XUUdkY\n55apO41B6DrXEmzDhQCSyNgoH8LPVOOZo7jDLPndM+A0VcWxae9vqlO2Oof8+Kde\nZGmYf3kK+V+5Tj7BhhpKOvp8zmGH7O9GOYhDvFmg9TRXkWatxzPF1oN7fHirfvvV\no2Jm1U7rHL6jTtnxEAEAu2N0iLPHfqb0Wyg7LV+1t1IwfB0n8nLJX/ZRFvvvhkmf\n6vogPChNQPT9pu3NnGGEladca7ei3yncGIE7ZPOIGzIhLViCm5Nltx9YsDKX8q0A\nDuDz4pt3bpJAt/py/3s2lWsr3wAUdR2lOj1SwWeFPVWF0n4k5Pb6qTksFctvJ2Wm\nQNue3Nea7ry277RTjgq11EEmMxCds/XeCvtZam21cjUeyO7TQO8ZnzgirjXuFjof\nftSe10KD9C0LapOnpwY10beCVO00FRMOZdxZZMI0CX7ZTXryiHf33L/8uMkrrjTH\nNW7OEW9IST793NXVFT4cZffwEuNkf2Se5PRIytNbeivwbal445bipzhWWfxL5Td3\nTq5+xIPji+uCDRkD2dlIWP8YczU4XdoJcTZO/mMyTDRNFWBR3YQ0MeGgiHsU01dY\n/NFrL06NECOwWc8Uweghh6hspAh1pwIDAQABAoICADgE3BBYg3CAnGqCKQAygUrq\nEld97fOR4iTGRToINIxDKwcL6d7JNsVQuMwZ/OAbfTsqug+qqbLM+DOsndIYRiF9\n2p+SIxe4e1wZbvrN+QzroFbNaTpD6JXgFBgCrD6XoqTSLtKaP3XQhAfKF6x1OHUA\nVqXvUWnciaEflYZB4upM7HdpJ0bW5haVqDwGwgjqPg6a0ndq/JeRCcbeQxwuPb8g\nMvE2/ypV9W2mlJ57mQZiVUBaI/qte9H0yQwB3UEnrVgtREMqq38/Njv/smimnxLk\n2J1GU2OQgiHnH285gW87EnyMYgEY3OSGr/p9DVZx6eTNgmU0r+KQ0XM4gSmPPVon\ntB7Yk64Nn05eYxFlU92ctqFyBTIMjsOu4lVkTfVQS0WpQS2JB5NMUuB/X6/H1Yhh\nB0FhC7yc9vIcpi97oWWnaqkxO9iowHdBXN3zYKXR2PzEwD1x4Oo6zMH8asevcjyg\n4tb/C+6mVRI2u6Y7PYC2sqotdXWVtqxOH4i343YWGw7SOg+Q8XtufsBI+6+TTmMs\nF+owuYZ0brLm4oR1EeJEj9iMGt48NTohjj94Ow3FQG+0tqfYnl7eMClz7wtHLSp/\n64pbPcyFstSi02iBV+3skwms++F5wERt5ZjQdf1L0s3q0B3J4M1LEuxqlzIKSUW3\nTJ0Q74/4dZuASgsIXwoxAoIBAQD2lWm7WwtpVKJEMmsBmaeKhqhmuIAql2ZwK5li\nK6z6ggWQ1GxnQUm+woKrnPsRn4Gohu8T15v3bSEaLF7avNjx50LXlhad4HyNv/Ge\nmXu5VYfcdPqVi0jXURcOSMHK75f13cVdn8aDEQpQKachGZ/iGMWH1t++3ak6EhK4\nnpvvB23FZ4eAL9IIavKrqRJQjppB3mK23TYFEiRgjOtItneUPU+fA/nVmBql2Zfj\nzRjwEcFqauV73hR8mXB54HGFajk7ttBy72zcYodVY9gIMgGFrdP4ZICK4TmK952U\nfGxDh+0BCf6E9jxr8IEGt41EJcdftr1axHYbxmszFqwyyn+RAoIBAQD6fE4HbFNE\nQ1Tav894Pgp0GGtOTicBw+kbCoJC27T5Rvhd+KRsdk4oZHki7G+Y9gclQiGGXIia\nuDY5y1tyywt67dCTgEgluW1AR7reVHsHL83pEfB7r4fvW+SX71Usy5TI8ellK2/Y\nIQDx7mitDh5E3zNJ4pk/qq9Jq24sak6Drxd5VobRmkcQ6UCgnqJBzKSZcMTcVodt\nJ5BTdPBjrcx/+9fq0nuBlcKC3v4k9Z50gUT8U9QoSESShD3k43cFzr7po3uGj2DG\nekXejRsKJFgjhNdRI7sX2OoOcxttbaeTPMbSqXD46xsuCYWbvyivHj2OzlYWfePN\nkMI314XwWnW3AoIBAQCnz81SFUbx2whHcyyBvUlZLAVFSwDme3zaj8FmHyUsovoY\ns4hGyRbf/M4i7sWrG6uIvrPMBCr/u0QQ5Ot035qhHmrN/zXLIfCCI4PTFM8vtTat\n4Op8hXsAFg6jyP4iFuaLC+96pPbbUeh736z/CMpXe9ZKeQByi7XUcGJPRJoIlTyu\nYKPFqEW/NtGJ45k0O6hddXQm0Osnjk41axHgvVUqDIO4S2NmaoqQHkKRZI45K0w/\nGRquLtgwZ9g1CXsYec8ThXndDnY+kctaYIWwJiAFEuS0IemdGmQn4BZc7ERdvQ6d\na2jMoitCpj2ZDafVHgTObbX2JMfgZSulbCOquUcRAoIBAQDUGcng00M2vGTvzheZ\n0776S2shpV+2SPPsJ9vhTTVTF1tcBx0DkrHf1iQVBGwC8+FdFUBaC6TIjk+sZJwM\n+g3Ai/tfyvJMr1TpZ1O+y35ZuYr8Xmpp8VqDviY02T4gbkqQVPey6TMNqfSo553P\nW/MZkn5VhAEMPjWrhfQGvAW7z9lqr2/9sEuY8En/OBRg7y45l5m6kbKfJS862/xq\nC1Ls1I4ikxRtyCgqtTQyi6EfOg72Mu2lJnyaLExUsp+oVUang/0nFeV2azcamhVZ\nYykW+ndwh3b3XH/kuGdzI7UQIhihbUTyIfKj6wAtv5Jtpoetkt6msPbirD8pFeCe\ng5rFAoIBADwhZ/QrKs4ZvUj3H5spXF7RMfpnPvwBHb/9PCnCEkC3Beungq6W/XpA\nCr7Xy/JcH02Hjv321W+v15KhFi0INSSSbl+et/+u3STP9GX0CuxB7wx9zkHKtDEn\nIq2XZY3UCn4JI0EO6n4pKIHNJbLT37orEPDJWIL6NOuc+64U0zzpSAh/7Wxq4Bil\n4Kp+9BSfN7hp9J72qOk0IZTuJhZpafGFeIAWzDCMXWB6De2fmO047eGmhOeGo2Pr\nMta2Yi5sWRUIufZB5EpPE1U6enoQnYKeL5ea+tk8TwqPEJ8eT1etf144qf2cT+2x\nFPVPrEDDNledQrsJGcGOU7XVoVOfj1Q=\n-----END PRIVATE KEY-----\n",
+            "public_key_fingerprint_md5": "a6:ca:46:e0:16:12:48:44:91:19:39:a3:93:67:53:14",
+            "public_key_fingerprint_sha256": "SHA256:fVTF9DR6PJwcjRsp4uBI+c6dXDKv8R+vMQknIDOhkbA",
+            "public_key_openssh": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDxRaTI2k11DX/wXQ+ta5abDf5LH35HnccP9uGpzUku5EVRXhYAItFhsihxCSkCfNau6rJJ8/XUUdkY55apO41B6DrXEmzDhQCSyNgoH8LPVOOZo7jDLPndM+A0VcWxae9vqlO2Oof8+KdeZGmYf3kK+V+5Tj7BhhpKOvp8zmGH7O9GOYhDvFmg9TRXkWatxzPF1oN7fHirfvvVo2Jm1U7rHL6jTtnxEAEAu2N0iLPHfqb0Wyg7LV+1t1IwfB0n8nLJX/ZRFvvvhkmf6vogPChNQPT9pu3NnGGEladca7ei3yncGIE7ZPOIGzIhLViCm5Nltx9YsDKX8q0ADuDz4pt3bpJAt/py/3s2lWsr3wAUdR2lOj1SwWeFPVWF0n4k5Pb6qTksFctvJ2WmQNue3Nea7ry277RTjgq11EEmMxCds/XeCvtZam21cjUeyO7TQO8ZnzgirjXuFjofftSe10KD9C0LapOnpwY10beCVO00FRMOZdxZZMI0CX7ZTXryiHf33L/8uMkrrjTHNW7OEW9IST793NXVFT4cZffwEuNkf2Se5PRIytNbeivwbal445bipzhWWfxL5Td3Tq5+xIPji+uCDRkD2dlIWP8YczU4XdoJcTZO/mMyTDRNFWBR3YQ0MeGgiHsU01dY/NFrL06NECOwWc8Uweghh6hspAh1pw==\n",
+            "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA8UWkyNpNdQ1/8F0PrWuW\nmw3+Sx9+R53HD/bhqc1JLuRFUV4WACLRYbIocQkpAnzWruqySfP11FHZGOeWqTuN\nQeg61xJsw4UAksjYKB/Cz1TjmaO4wyz53TPgNFXFsWnvb6pTtjqH/PinXmRpmH95\nCvlfuU4+wYYaSjr6fM5hh+zvRjmIQ7xZoPU0V5FmrcczxdaDe3x4q3771aNiZtVO\n6xy+o07Z8RABALtjdIizx36m9FsoOy1ftbdSMHwdJ/JyyV/2URb774ZJn+r6IDwo\nTUD0/abtzZxhhJWnXGu3ot8p3BiBO2TziBsyIS1YgpuTZbcfWLAyl/KtAA7g8+Kb\nd26SQLf6cv97NpVrK98AFHUdpTo9UsFnhT1VhdJ+JOT2+qk5LBXLbydlpkDbntzX\nmu68tu+0U44KtdRBJjMQnbP13gr7WWpttXI1Hsju00DvGZ84Iq417hY6H37UntdC\ng/QtC2qTp6cGNdG3glTtNBUTDmXcWWTCNAl+2U168oh399y//LjJK640xzVuzhFv\nSEk+/dzV1RU+HGX38BLjZH9knuT0SMrTW3or8G2peOOW4qc4Vln8S+U3d06ufsSD\n44vrgg0ZA9nZSFj/GHM1OF3aCXE2Tv5jMkw0TRVgUd2ENDHhoIh7FNNXWPzRay9O\njRAjsFnPFMHoIYeobKQIdacCAwEAAQ==\n-----END PUBLIC KEY-----\n",
+            "rsa_bits": 4096
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "private_key_openssh"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "private_key_pem"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "private_key_pem_pkcs8"
+              }
+            ]
+          ],
+          "identity_schema_version": 0
+        }
+      ]
+    }
+  ],
+  "check_results": null
+}
